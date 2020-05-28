@@ -134,10 +134,30 @@ LL_list LL_concat(LL_map)(LL_list l, LL_TYPE (*func)(LL_TYPE)) {
     }
     return new_l;
 }
+LL_TYPE* LL_concat(LL_toArr)(LL_list l) {
+    LL_TYPE* arr = (LL_TYPE*) malloc(sizeof(LL_TYPE) * (l->size));
+    LL_node current = l->head;
+    int i = 0;
+    while (i < l->size) {
+        arr[i] = current->value;
+        current = current->next;
+        i++;
+    }
+    return arr;
+}
+LL_list LL_concat(LL_fromArr)(LL_TYPE* arr, int size) {
+    LL_list l = LL_newthing(LL_list)();
+    for (int i = 0; i < size; i++) {
+        LL_concat(LL_append)(l, arr[i]);
+    }
+    return l;
+}
 
 #undef LL_combine_
 #undef LL_combine
 #undef LL_concat
+#undef LL_TYPE
+#undef LL_newthing
 
 #undef LL_node
 #undef LL_list
