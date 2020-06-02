@@ -2,6 +2,7 @@
 #define LL_combine(a, b) LL_combine_(a, b)
 #define LL_concat(a) LL_combine(a, LL_TYPE)
 #define LL_newthing(a) LL_combine(new, a)
+#define LL_freething(a) LL_combine(free, a)
 
 #define LL_node LL_concat(NodeLinkedList)
 #define LL_list LL_concat(LinkedList)
@@ -145,12 +146,31 @@ LL_TYPE* LL_concat(LL_toArr)(LL_list l) {
     }
     return arr;
 }
+LL_node* LL_concat(LL_toPositionArr)(LL_list l) {
+    LL_node* arr = (LL_node*) malloc(sizeof(LL_node) * (l->size));
+    LL_node current = l->head;
+    int i = 0;
+    while (i < l->size) {
+        arr[i] = current;
+        current = current->next;
+        i++;
+    }
+    return arr;
+}
 LL_list LL_concat(LL_fromArr)(LL_TYPE* arr, int size) {
     LL_list l = LL_newthing(LL_list)();
     for (int i = 0; i < size; i++) {
         LL_concat(LL_append)(l, arr[i]);
     }
     return l;
+}
+void LL_freething(LL_list)(LL_list l) {
+    LL_node* arr = LL_concat(LL_toPositionArr)(l);
+    int i = l->size;
+    while (i--) {
+        free(arr[i]);
+    }
+    free(arr);
 }
 
 #undef LL_combine_
