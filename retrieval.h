@@ -16,6 +16,16 @@ typedef struct RT_tree* RT_tree;
 
 typedef void(*function)(RT_params);
 
+// 1 if equal, 0 otherwise
+int RT_concat(RT_compare)(RT_TYPE v1, RT_TYPE v2) {
+    char* s1 = (char*) (&v1);
+    char* s2 = (char*) (&v2);
+    for (int i = 0; i < sizeof(RT_TYPE); i++) {
+        if ((*s1++) != (*s2++)) return 0;
+    }
+    return 1;
+}
+
 struct RT_tree {
     RT_TYPE value;
     function func;
@@ -37,8 +47,7 @@ RT_tree RT_concat(RT_append)(RT_tree t, RT_TYPE* arr, int len, function f) {
         j = t->children->size;
         current = t->children->head;
         while (j) {
-            if (current->value->value == arr[i]) {
-                printf(">%c ", arr[i]);
+            if (RT_concat(RT_compare)(current->value->value, arr[i])) {
                 break;
             }
             current = current->next;
@@ -68,7 +77,7 @@ RT_tree RT_concat(RT_get)(RT_tree t, RT_TYPE* arr, int len) {
         j = t->children->size;
         current = t->children->head;
         while (j) {
-            if (current->value->value == arr[i]) {
+            if (RT_concat(RT_compare)(current->value->value, arr[i])) {
                 break;
             }
             current = current->next;
