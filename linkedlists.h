@@ -103,14 +103,20 @@ LL_node LL_concat(LL_positionInsert)(LL_list l, LL_TYPE value, LL_node pos) {
 }
 LL_node LL_concat(LL_remove)(LL_list l, int i) {
     LL_checkIndicies
+    if (l->size == 1) {
+        l->size = 0;
+        return l->head;
+    }
     if (i == 0) {
         LL_node h = l->head;
         l->head = h->next;
+        l->size--;
         return h;
     }
     else if (i == (l->size-1)) {
         LL_node prev = LL_concat(LL_positionGet)(l, i-1);
         l->tail = prev;
+        l->size--;
         return prev->next;
     }
     LL_node prev = LL_concat(LL_positionGet)(l, i-1);
@@ -119,6 +125,7 @@ LL_node LL_concat(LL_remove)(LL_list l, int i) {
     l->size--;
     return n;
 }
+// cannot positional remove from the first or last element
 LL_node LL_concat(LL_positionRemove)(LL_list l, LL_node pos) {
     LL_node n = pos->next;
     pos->next = n->next;
