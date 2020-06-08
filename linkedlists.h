@@ -43,8 +43,16 @@ LL_TYPE LL_concat(LL_get)(LL_list l, int i) {
     }
     return current->value;
 }
+LL_node LL_concat(LL_set)(LL_list l, int i, LL_TYPE value) {
+    LL_node n = LL_concat(LL_positionGet)(l, i);
+    n->value = value;
+    return n;
+}
 LL_node LL_concat(LL_positionGet)(LL_list l, int i) {
     LL_checkIndicies
+    if (i == l->size-1) {
+        return l->tail;
+    }
     LL_node current = l->head;
     while (i--) {
         current = current->next;
