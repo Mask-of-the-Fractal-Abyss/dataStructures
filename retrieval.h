@@ -14,8 +14,6 @@ typedef struct RT_tree* RT_tree;
 #include <linkedlists.h>
 #undef LL_TYPE
 
-typedef void(*function)(RT_params);
-
 // 1 if equal, 0 otherwise
 int RT_concat(RT_compare)(RT_TYPE v1, RT_TYPE v2) {
     char* s1 = (char*) (&v1);
@@ -28,7 +26,7 @@ int RT_concat(RT_compare)(RT_TYPE v1, RT_TYPE v2) {
 
 struct RT_tree {
     RT_TYPE value;
-    function func;
+    RT_RETURN func;
     RT_list children;
 };
 RT_tree RT_newthing(RT_tree)(RT_TYPE value) {
@@ -39,7 +37,7 @@ RT_tree RT_newthing(RT_tree)(RT_TYPE value) {
     return t;
 }
 
-RT_tree RT_concat(RT_append)(RT_tree t, RT_TYPE* arr, int len, function f) {
+RT_tree RT_concat(RT_append)(RT_tree t, RT_TYPE* arr, int len, RT_RETURN f) {
     RT_node current;
     int i, j;
     i = 0;
@@ -68,7 +66,6 @@ RT_tree RT_concat(RT_append)(RT_tree t, RT_TYPE* arr, int len, function f) {
     }
     return t;
 }
-
 RT_tree RT_concat(RT_get)(RT_tree t, RT_TYPE* arr, int len) {
     RT_node current;
     int i, j;
@@ -89,5 +86,5 @@ RT_tree RT_concat(RT_get)(RT_tree t, RT_TYPE* arr, int len) {
         t = current->value;
         i++;
     }
-    return t;
+    return 0;
 }
