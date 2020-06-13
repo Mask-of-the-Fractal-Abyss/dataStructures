@@ -43,11 +43,6 @@ LL_TYPE LL_concat(LL_get)(LL_list l, int i) {
     }
     return current->value;
 }
-LL_node LL_concat(LL_set)(LL_list l, int i, LL_TYPE value) {
-    LL_node n = LL_concat(LL_positionGet)(l, i);
-    n->value = value;
-    return n;
-}
 LL_node LL_concat(LL_positionGet)(LL_list l, int i) {
     LL_checkIndicies
     if (i == l->size-1) {
@@ -58,6 +53,11 @@ LL_node LL_concat(LL_positionGet)(LL_list l, int i) {
         current = current->next;
     }
     return current;
+}
+LL_node LL_concat(LL_set)(LL_list l, int i, LL_TYPE value) {
+    LL_node n = LL_concat(LL_positionGet)(l, i);
+    n->value = value;
+    return n;
 }
 LL_node LL_concat(LL_append)(LL_list l, LL_TYPE value) {
     LL_node n = LL_newthing(LL_node)(value);
@@ -103,6 +103,7 @@ LL_node LL_concat(LL_insert)(LL_list l, LL_TYPE value, int i) {
     l->size++;
     return n;
 }
+// cannot positional insert from the first or last element
 LL_node LL_concat(LL_positionInsert)(LL_list l, LL_TYPE value, LL_node pos) {
     LL_node n = LL_newthing(LL_node)(value);
     n->next = pos->next->next;
