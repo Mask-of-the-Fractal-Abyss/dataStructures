@@ -152,7 +152,7 @@ LL_list LL_concat(LL_map)(LL_list l, LL_TYPE (*func)(LL_TYPE)) {
     return new_l;
 }
 LL_TYPE* LL_concat(LL_toArr)(LL_list l) {
-    LL_TYPE* arr = (LL_TYPE*) malloc(sizeof(LL_TYPE) * (l->size));
+    LL_TYPE* arr = (LL_TYPE*) calloc(l->size, sizeof(LL_TYPE));
     LL_node current = l->head;
     int i = 0;
     while (i < l->size) {
