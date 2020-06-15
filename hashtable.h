@@ -4,6 +4,7 @@
 #define HT_freething(a) HT_combine(free, a)
 
 #define HT_pair HT_combine(HT_combine(pair, HT_KEY), HT_VAL)
+#define HT_concatK(a) HT_combine(a, HT_KEY)
 #define HT_concat(a) HT_combine(a, HT_pair)
 #define HT_table HT_concat(HashTable)
 #define HT_node HT_concat(NodeLinkedList)
@@ -19,24 +20,10 @@ typedef struct HT_pair* HT_pair;
 #include <linkedlists.h>
 #undef LL_TYPE
 
-// http://www.cse.yorku.ca/~oz/hash.html
-unsigned long HT_concat(HT_hash)(HT_KEY value) {
-    unsigned long hash = 5381;
-    char* s = (char*) (value);
-    for (int i = 0; i < sizeof(HT_KEY); i++) {
-        hash = ((hash << 5) + hash) + (*s++);
-    }
-    return hash;
-}
+extern unsigned long HT_concatK(HT_hash)(char* value);
+
 // 1 if equal, 0 otherwise
-int HT_concat(HT_compare)(HT_KEY v1, HT_KEY v2) {
-    char* s1 = (char*) (&v1);
-    char* s2 = (char*) (&v2);
-    for (int i = 0; i < sizeof(HT_KEY); i++) {
-        if ((*s1++) != (*s2++)) return 0;
-    }
-    return 1;
-}
+extern int HT_concatK(HT_compare)(HT_KEY v1, HT_KEY v2);
 
 struct HT_table {
     int size, entryCount;
@@ -45,7 +32,7 @@ struct HT_table {
 };
 typedef struct HT_table* HT_table;
 HT_list* HT_newthing(HT_concat(buckets))(int size) {
-    HT_list* arr = (HT_list*) malloc(sizeof(HT_list));
+    HT_list* arr = (HT_list*) malloc(sizeof(HT_list) * size);
     for (int i = 0; i < size; i++) {
         arr[i] = HT_concat(new_LinkedList)();
     }
@@ -60,13 +47,12 @@ HT_table HT_newthing(HT_table)(int initial, double max) {
     return t;
 }
 HT_node HT_concat(HT_get)(HT_table t, HT_KEY key) {
-    unsigned h = HT_concat(HT_hash)(key) % t->size;
+    unsigned h = HT_concatK(HT_hash)(key) % t->size;
     HT_list l = t->buckets[h];
     HT_node current = l->head;
     int i = 0;
     while (i < l->size) {
-        printf(">%s<, >%s<", current->value->key, key);
-        if (HT_concat(HT_compare)(current->value->key, key)) {
+        if (HT_concatK(HT_compare)(current->value->key, key)) {
             return current;
         }
         current = current->next;
@@ -81,8 +67,7 @@ HT_pair HT_concat(HT_set)(HT_table t, HT_KEY key, HT_VAL value) {
 }
 HT_node HT_concat(HT_rehash)(HT_table t, HT_pair pair);
 HT_node HT_concat(HT_add)(HT_table t, HT_KEY key, HT_VAL value) {
-    unsigned h = HT_concat(HT_hash)(key) % t->size;
-    printf("%d", h);
+    unsigned h = HT_concatK(HT_hash)(key) % t->size;
     t->entryCount += 1;
     HT_pair pair = (HT_pair) malloc(sizeof(HT_pair));
     pair->key = key;
@@ -94,13 +79,13 @@ HT_node HT_concat(HT_add)(HT_table t, HT_KEY key, HT_VAL value) {
     return HT_concat(HT_rehash)(t, pair);
 }
 HT_node HT_concat(HT_remove)(HT_table t, HT_KEY key) {
-    unsigned h = HT_concat(HT_hash)(key) % t->size;
+    unsigned h = HT_concatK(HT_hash)(key) % t->size;
     HT_list l = t->buckets[h];
     HT_node prev, current;
     current = l->head;
     int i = 0;
     while (i < l->size) {
-        if (HT_concat(HT_compare)(current->value->key, key)) {
+        if (HT_concatK(HT_compare)(current->value->key, key)) {
             t->entryCount--;
             if (i == 0 || i == (l->size-1)) {
                 return HT_concat(LL_remove)(l, i);
@@ -114,7 +99,7 @@ HT_node HT_concat(HT_remove)(HT_table t, HT_KEY key) {
     return 0;
 }
 HT_node HT_concat(HT_addPair)(HT_table t, HT_pair pair) {
-    unsigned h = HT_concat(HT_hash)(pair->key) % t->size;
+    unsigned h = HT_concatK(HT_hash)(pair->key) % t->size;
     t->entryCount += 1;
     HT_node n = HT_concat(LL_append)(t->buckets[h], pair);
     if (((float) (t->entryCount) / t->size) < t->max) {
@@ -134,10 +119,10 @@ HT_node HT_concat(HT_rehash)(HT_table t, HT_pair pair) {
         j = 0;
         current = prev[i]->head;
         while (j < prev[i]->size) {
-            unsigned h = HT_concat(HT_hash)(current->value->key) % t->size;
+            unsigned h = HT_concatK(HT_hash)(current->value->key) % t->size;
             t->entryCount += 1;
             HT_node n = HT_concat(LL_append)(t->buckets[h], current->value);
-            if (HT_concat(HT_compare)(current->value->key, pair->key)) {
+            if (HT_concatK(HT_compare)(current->value->key, pair->key)) {
                 out = n;
             }
             else {
